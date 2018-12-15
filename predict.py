@@ -17,7 +17,7 @@ session_config.gpu_options.allow_growth = True
 with tf.Session(graph=tf.Graph(), config=session_config) as sess:
     tf.saved_model.loader.load(sess,['serve'],'./models/inria/1544779282')
     graph = tf.get_default_graph()
-    x=sess.graph.get_tensor_by_name('image:0')
+    x=sess.graph.get_tensor_by_name('images:0')
     y=sess.graph.get_tensor_by_name('classes:0')
     imgl=os.listdir('test_images')
     for imgn in imgl:

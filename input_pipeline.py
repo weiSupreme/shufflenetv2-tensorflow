@@ -82,12 +82,12 @@ class Pipeline:
 
             image = self.augmentation(image_as_string, boxes)
         else:
-            image = tf.image.decode_jpeg(image_as_string, channels=3)
+            image = tf.image.decode_jpeg(image_as_string, channels=1)
             image = (1.0 / 255.0) * tf.to_float(image)  # to [0, 1] range
             image = resize_keeping_aspect_ratio(image, MIN_DIMENSION)
             image = central_crop(image, crop_height=IMAGE_SIZE, crop_width=IMAGE_SIZE)
 
-        image.set_shape([IMAGE_SIZE, IMAGE_SIZE, 3])
+        image.set_shape([IMAGE_SIZE, IMAGE_SIZE, 1])
 
         # in the format required by tf.estimator,
         # they will be batched later
@@ -105,7 +105,7 @@ class Pipeline:
         )
 
         image = (1.0 / 255.0) * tf.to_float(image)  # to [0, 1] range
-        image = random_color_manipulations(image, probability=0.25, grayscale_probability=0.05)
+        #image = random_color_manipulations(image, probability=0.25, grayscale_probability=0.05)
         return image
 
 
@@ -149,7 +149,7 @@ def get_random_crop(image_as_string, boxes):
     crop_window = tf.stack([offset_y, offset_x, target_height, target_width])
 
     crop = tf.image.decode_and_crop_jpeg(
-        image_as_string, crop_window, channels=3
+        image_as_string, crop_window, channels=1
     )
     return crop
 

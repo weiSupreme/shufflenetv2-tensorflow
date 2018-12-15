@@ -15,7 +15,7 @@ def model_fn(features, labels, mode, params):
 
     mode = tf.estimator.ModeKeys.PREDICT
     logits = shufflenet(
-        features['image'], False,
+        features['images'], False,
         num_classes=params['num_classes'],
         depth_multiplier=params['depth_multiplier']
     )

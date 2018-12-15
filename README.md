@@ -1,4 +1,6 @@
 # ShuffleNet v2
+shufflenetV2-Tensorflow with tf.estimator to train, evaluate and pridict. Modified from https://github.com/TropComplique/shufflenet-v2-tensorflow. Great thanks!
+
 This is an implementation of [ShuffleNet V2: Practical Guidelines for Efficient CNN Architecture Design
 ](https://arxiv.org/abs/1807.11164).
 
@@ -58,4 +60,3 @@ The training code is heavily inspired by:
 ## Other implementations
 1. [miaow1988/ShuffleNet_V2_pytorch_caffe](https://github.com/miaow1988/ShuffleNet_V2_pytorch_caffe)
 2. [tensorpack/examples/ImageNetModels](https://github.com/tensorpack/tensorpack/tree/master/examples/ImageNetModels#shufflenet)
-shufflenetV2-Tensorflow with tf.estimator to train,evaluate and pridict. Modified from https://github.com/TropComplique/shufflenet-v2-tensorflow. Great thankspython name2int.py!

@@ -39,7 +39,7 @@ run_config = run_config.replace(model_dir=PARAMS['model_dir'], session_config=se
 
 estimator = tf.estimator.Estimator(model_fn, params=PARAMS, config=run_config)
 
-feature_spec = {'image': tf.placeholder(dtype=float, shape=[1, 224,224,3],name='image')}
+feature_spec = {'images': tf.placeholder(dtype=float, shape=[1, 224,224,3],name='image')}
 serving_input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn(feature_spec)
 estimator.export_savedmodel(PARAMS['model_dir'], serving_input_fn)
 '''
