@@ -8,10 +8,5 @@ export/
 test_images/
 images/
 run00/
-data/imagenet_ctrain/
-data/imagenet_cval/
-data/inria_train/
-data/inria_val/
-data/train/
-data/val/
 *.tar.gz
+*.tfrecords

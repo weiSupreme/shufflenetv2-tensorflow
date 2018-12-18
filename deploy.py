@@ -23,8 +23,8 @@ Parameters below is for training 0.5x version.
 
 GPU_TO_USE = '0'
 PARAMS = {
-    'model_dir': 'models/inria',
-    'num_classes': 200,
+    'model_dir': 'models/char',
+    'num_classes': 2,
     'depth_multiplier': '0.5'  # set '1.0' for 1.0x version
 }
 
@@ -39,7 +39,7 @@ run_config = run_config.replace(model_dir=PARAMS['model_dir'], session_config=se
 
 estimator = tf.estimator.Estimator(model_fn, params=PARAMS, config=run_config)
 
-feature_spec = {'images': tf.placeholder(dtype=float, shape=[1, 224,224,3],name='image')}
+feature_spec = {'images': tf.placeholder(dtype=float, shape=[None, 224,224,1],name='images')}
 serving_input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn(feature_spec)
 estimator.export_savedmodel(PARAMS['model_dir'], serving_input_fn)
 '''

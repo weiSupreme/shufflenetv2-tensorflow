@@ -27,11 +27,11 @@ python create_tfrecords.py \
 
 def make_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-m', '--metadata_file', type=str,default='imagenet_train_list.csv')
-    parser.add_argument('-o', '--output', type=str,default='train')
+    parser.add_argument('-m', '--metadata_file', type=str,default='tzb1218_train_list.txt')
+    parser.add_argument('-o', '--output', type=str,default='tzb1218_train')
     parser.add_argument('-l', '--labels', type=str,default='integer_encoding.json')
     parser.add_argument('-b', '--boxes', type=str, default='')
-    parser.add_argument('-s', '--num_shards', type=int, default=200)
+    parser.add_argument('-s', '--num_shards', type=int, default=2)
     return parser.parse_args()
 
 
@@ -158,6 +158,7 @@ def main():
     for line in lines:
         line_s=line.strip('\n').split(' ')
         keyic.update({line_s[0]:int(line_s[1])})
+    keyic={'norm':0,'defect':1}
     for T in tqdm(metadata.itertuples()):
         cnt += 1
         if num_examples_written == 0:
@@ -165,8 +166,15 @@ def main():
             writer = tf.python_io.TFRecordWriter(shard_path)
         #print(T[1])
         #return
-        image_path = T[1].split(' ')[0]# T.path  # absolute path to an image
-        integer_label = keyic[T[1].split(' ')[1]] #label_encoder[T.wordnet_id]
+        Ts=T[1].split(' ')
+        image_path=''
+        integer_label=''
+        if len(Ts)>2:
+            image_path=Ts[0]+' '+Ts[1]
+            integer_label=keyic[Ts[2]]
+        else:
+            image_path = T[1].split(' ')[0]# T.path  # absolute path to an image
+            integer_label = keyic[T[1].split(' ')[1]] #label_encoder[T.wordnet_id]
         boxes = None  # validation images don't have boxes
         if bounding_boxes is not None:
             boxes = bounding_boxes.get(T.just_name, np.empty((0, 4), dtype='float32'))
