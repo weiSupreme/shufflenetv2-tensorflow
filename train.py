@@ -22,11 +22,11 @@ GPU_TO_USE = '0'
 BATCH_SIZE = 128
 VALIDATION_BATCH_SIZE = 32
 NUM_EPOCHS = 200  # set 133 for 1.0x version
-TRAIN_DATASET_SIZE = 11005
+TRAIN_DATASET_SIZE = 8486
 NUM_STEPS = NUM_EPOCHS * (TRAIN_DATASET_SIZE // BATCH_SIZE)
 PARAMS = {
-    'train_dataset_path': 'data/tzb1218_train/',
-    'val_dataset_path': 'data/tzb1218_val/',
+    'train_dataset_path': 'data/tzb1219_train/',
+    'val_dataset_path': 'data/tzb1219_val/',
     'weight_decay': 4e-5,
     'initial_learning_rate': 0.0625, #0.0625,  # 0.5/8
     'decay_steps': NUM_STEPS,
@@ -65,7 +65,7 @@ run_config = tf.estimator.RunConfig()
 run_config = run_config.replace(
     model_dir=PARAMS['model_dir'], session_config=session_config,
     save_summary_steps=500, save_checkpoints_secs=300,
-    log_step_count_steps=20
+    log_step_count_steps=50
 )
 
 
@@ -75,7 +75,7 @@ estimator = tf.estimator.Estimator(model_fn, params=PARAMS, config=run_config)
 
 train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=NUM_STEPS)
 eval_spec = tf.estimator.EvalSpec(
-    val_input_fn, steps=None, start_delay_secs=4, throttle_secs=4,
+    val_input_fn, steps=None, start_delay_secs=300, throttle_secs=300,
     hooks=[RestoreMovingAverageHook(PARAMS['model_dir'])]
 )
 tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
