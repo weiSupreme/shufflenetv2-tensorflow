@@ -19,14 +19,14 @@ Parameters below is for training 0.5x version.
 # so 1 epoch ~ 10000 steps
 
 GPU_TO_USE = '0'
-BATCH_SIZE = 128
+BATCH_SIZE = 256
 VALIDATION_BATCH_SIZE = 32
-NUM_EPOCHS = 200  # set 133 for 1.0x version
-TRAIN_DATASET_SIZE = 8486
+NUM_EPOCHS = 133  # set 133 for 1.0x version
+TRAIN_DATASET_SIZE = 20547
 NUM_STEPS = NUM_EPOCHS * (TRAIN_DATASET_SIZE // BATCH_SIZE)
 PARAMS = {
-    'train_dataset_path': 'data/tzb1219_train/',
-    'val_dataset_path': 'data/tzb1219_val/',
+    'train_dataset_path': 'data/tzb1224_train/',
+    'val_dataset_path': 'data/tzb1224_val/',
     'weight_decay': 4e-5,
     'initial_learning_rate': 0.0625, #0.0625,  # 0.5/8
     'decay_steps': NUM_STEPS,
@@ -75,7 +75,7 @@ estimator = tf.estimator.Estimator(model_fn, params=PARAMS, config=run_config)
 
 train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=NUM_STEPS)
 eval_spec = tf.estimator.EvalSpec(
-    val_input_fn, steps=None, start_delay_secs=300, throttle_secs=300,
+    val_input_fn, steps=None, start_delay_secs=120, throttle_secs=120,
     hooks=[RestoreMovingAverageHook(PARAMS['model_dir'])]
 )
 tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
