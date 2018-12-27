@@ -1,10 +1,10 @@
 import tensorflow as tf
 
 
-SHUFFLE_BUFFER_SIZE = 20600
+SHUFFLE_BUFFER_SIZE = 33600
 NUM_FILES_READ_IN_PARALLEL = 10
 NUM_PARALLEL_CALLS = 8
-RESIZE_METHOD = tf.image.ResizeMethod.BILINEAR
+RESIZE_METHOD = 1 #tf.image.ResizeMethod.BILINEAR
 IMAGE_SIZE = 224  # this will be used for training and evaluation
 MIN_DIMENSION = 256  # when evaluating, resize to this size before doing central crop
 
@@ -105,7 +105,7 @@ class Pipeline:
         )
 
         image = (1.0 / 255.0) * tf.to_float(image)  # to [0, 1] range
-        #image = random_color_manipulations(image, probability=0.25, grayscale_probability=0.05)
+        #image = random_color_manipulations(image, probability=0.25, grayscale_probability=0.05, fast=False)
         return image
 
 
@@ -173,7 +173,7 @@ def random_color_manipulations(image, probability=0.1, grayscale_probability=0.1
             # intensity and order of this operations are kinda random,
             # so you will need to tune this for you problem
             image = tf.image.random_brightness(image, 0.15)
-            image = tf.image.random_contrast(image, 0.8, 1.2)
+            image = tf.image.random_contrast(image, 0.6, 1.5)
             image = tf.image.random_hue(image, 0.15)
             image = tf.image.random_saturation(image, 0.8, 1.2)
             image = tf.clip_by_value(image, 0.0, 1.0)
@@ -181,18 +181,9 @@ def random_color_manipulations(image, probability=0.1, grayscale_probability=0.1
             image = distort_color_fast(image)
         return image
 
-    def to_grayscale(image):
-        image = tf.image.rgb_to_grayscale(image)
-        image = tf.image.grayscale_to_rgb(image)
-        return image
-
     with tf.name_scope('random_color_manipulations'):
         do_it = tf.less(tf.random_uniform([]), probability)
         image = tf.cond(do_it, lambda: manipulate(image), lambda: image)
-
-    with tf.name_scope('to_grayscale'):
-        make_gray = tf.less(tf.random_uniform([]), grayscale_probability)
-        image = tf.cond(make_gray, lambda: to_grayscale(image), lambda: image)
 
     return image
 

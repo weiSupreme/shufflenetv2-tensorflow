@@ -21,7 +21,7 @@ Parameters below is for training 0.5x version.
 # 1281144/128 = 10008.9375
 # so 1 epoch ~ 10000 steps
 
-GPU_TO_USE = '0'
+GPU_TO_USE = '1'
 PARAMS = {
     'model_dir': 'models/tzb',
     'num_classes': 2,
@@ -40,22 +40,8 @@ run_config = run_config.replace(model_dir=PARAMS['model_dir'], session_config=se
 estimator = tf.estimator.Estimator(model_fn, params=PARAMS, config=run_config)
 
   
-#feature_spec = {'images': tf.image.resize_images(tf.placeholder(dtype=float, shape=[None, None,None,1],name='images'),[224,224])}
-feature_spec = {'images': tf.placeholder(dtype=float, shape=[None, None,None,1],name='images')}
+#feature_spec = {'images': tf.placeholder(dtype=float, shape=[None, None,None,1],name='images')}
+feature_spec = {'images': tf.placeholder(dtype='uint8', shape=[None,None,1],name='images')}
 serving_input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn(feature_spec)
 estimator.export_savedmodel(PARAMS['model_dir'], serving_input_fn)
-'''
-imgl=os.listdir('test_images')
-for imgn in imgl:
-    
-    img=Image.open('test_images/'+imgn)
-    img=img.resize((224, 224),Image.ANTIALIAS)
-    #img=np.array(img,dtype=float)
-    img.shape=(1,224,224,3)
-    feature_spec['image']=img
-    serving_input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn(feature_spec)
-    output=estimator.predict(input_fn=serving_input_fn)
-    print(imgn)
-    print(imgn, ' ', output)
-    break
-'''
+

@@ -32,7 +32,12 @@ def shufflenet(images, is_training, num_classes=1000, depth_multiplier='1.0'):
             fused=True, name='batch_norm'
         )
         return x
-
+    if not is_training:
+        with tf.name_scope('image_preprocess'):
+            #0:bilinear,1:NEAREST,2:cubic,3:area
+            images=tf.image.resize_images(images,[224,224],method=0)
+            images=(1.0 / 255.0) * tf.to_float(images)
+            images=tf.reshape(images, (1,224,224,1))
     with tf.name_scope('standardize_input'):
         x = (2.0 * images) - 1.0
 

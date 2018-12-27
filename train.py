@@ -18,15 +18,15 @@ Parameters below is for training 0.5x version.
 # 1281144/128 = 10008.9375
 # so 1 epoch ~ 10000 steps
 
-GPU_TO_USE = '0'
-BATCH_SIZE = 256
+GPU_TO_USE = '1'
+BATCH_SIZE = 128
 VALIDATION_BATCH_SIZE = 32
-NUM_EPOCHS = 133  # set 133 for 1.0x version
-TRAIN_DATASET_SIZE = 20547
+NUM_EPOCHS = 133  # set 166 for 1.0x version
+TRAIN_DATASET_SIZE = 33004
 NUM_STEPS = NUM_EPOCHS * (TRAIN_DATASET_SIZE // BATCH_SIZE)
 PARAMS = {
-    'train_dataset_path': 'data/tzb1224_train/',
-    'val_dataset_path': 'data/tzb1224_val/',
+    'train_dataset_path': 'data/tzb1225_train/',
+    'val_dataset_path': 'data/tzb1225_val/',
     'weight_decay': 4e-5,
     'initial_learning_rate': 0.0625, #0.0625,  # 0.5/8
     'decay_steps': NUM_STEPS,
