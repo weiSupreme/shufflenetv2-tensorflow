@@ -32,7 +32,7 @@ def shufflenet(images, is_training, num_classes=1000, depth_multiplier='1.0'):
             fused=True, name='batch_norm'
         )
         return x
-    if not is_training:
+    if False:
         with tf.name_scope('image_preprocess'):
             #0:bilinear,1:NEAREST,2:cubic,3:area
             images=tf.image.resize_images(images,[224,224],method=0)
@@ -58,7 +58,9 @@ def shufflenet(images, is_training, num_classes=1000, depth_multiplier='1.0'):
 
             final_channels = 1024 if depth_multiplier != '2.0' else 2048
             x = slim.conv2d(x, final_channels, (1, 1), stride=1, scope='Conv5')
-
+    if True:
+        with tf.variable_scope('RFBModule'):
+            x = RFBModuleB(x, final_channels)
     # global average pooling
     x = tf.reduce_mean(x, axis=[1, 2])
 
@@ -67,6 +69,30 @@ def shufflenet(images, is_training, num_classes=1000, depth_multiplier='1.0'):
         weights_initializer=tf.contrib.layers.xavier_initializer()
     )
     return logits
+
+def RFBModuleB(x, in_channels):
+    inc=in_channels//8
+    conv1x1=slim.conv2d(x, 2*inc, (1, 1), stride=1, scope='conv1x1')
+    with tf.variable_scope('branch0'):
+        branch0_conv3x3=slim.conv2d(conv1x1, 2*inc, (3, 3), stride=1, padding='SAME')
+    with tf.variable_scope('branch1'):
+        branch1_conv3x3=slim.conv2d(conv1x1, 2*inc, (3, 3), stride=1, padding='SAME')
+        branch1_conv3x3_dilation=slim.conv2d(branch1_conv3x3, 2*inc, (3, 3), stride=1, padding='SAME',rate=2)
+    with tf.variable_scope('branch2'):
+        branch2_conv5x5_1=slim.conv2d(conv1x1, (inc//2)*3, (3, 3), stride=1, padding='SAME') 
+        branch2_conv5x5_2=slim.conv2d(branch2_conv5x5_1, 2*inc, (3, 3), stride=1, padding='SAME') 
+        branch2_conv3x3_dilation=slim.conv2d(branch2_conv5x5_2, 2*inc, (3, 3), stride=1, padding='SAME',rate=3)  
+    
+    shape = tf.shape(conv1x1)
+    batch_size = shape[0]
+    height, width = shape[1], shape[2]
+    depth = conv1x1.shape[3].value
+    #[batch,height,width,4,depth]
+    x = tf.stack([conv1x1, branch0_conv3x3,branch1_conv3x3_dilation,branch2_conv3x3_dilation], axis=3)
+    x = tf.transpose(x, [0, 1, 2, 4, 3])
+    x = tf.reshape(x, [batch_size, height, width, 4*depth])
+    x=slim.conv2d(x, in_channels, (1, 1), stride=1, scope='output')
+    return x
 
 
 def block(x, num_units, out_channels=None, scope='stage'):
@@ -113,6 +139,20 @@ def basic_unit_with_downsampling(x, out_channels=None):
     y = slim.conv2d(x, in_channels, (1, 1), stride=1, scope='conv1x1_before')
     y = depthwise_conv(y, kernel=3, stride=2, activation_fn=None, scope='depthwise')
     y = slim.conv2d(y, out_channels // 2, (1, 1), stride=1, scope='conv1x1_after')
+    
+    if False:  #with SENet module
+        with tf.variable_scope('SEModule'):
+            z= tf.reduce_mean(y, axis=[1, 2], name='globalPooling')
+            z=slim.fully_connected(
+                z, out_channels // 32, activation_fn=tf.nn.relu, scope='fc1',
+                weights_initializer=tf.contrib.layers.xavier_initializer()
+            )
+            z=slim.fully_connected(
+                z, out_channels // 2, activation_fn=tf.nn.sigmoid, scope='fc2',
+                weights_initializer=tf.contrib.layers.xavier_initializer()
+            )
+            z=tf.reshape(z,[-1,1,1,out_channels // 2])
+            y=y*z
 
     with tf.variable_scope('second_branch'):
         x = depthwise_conv(x, kernel=3, stride=2, activation_fn=None, scope='depthwise')

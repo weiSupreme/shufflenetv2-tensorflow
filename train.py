@@ -22,17 +22,17 @@ GPU_TO_USE = '1'
 BATCH_SIZE = 128
 VALIDATION_BATCH_SIZE = 32
 NUM_EPOCHS = 133  # set 166 for 1.0x version
-TRAIN_DATASET_SIZE = 33004
+TRAIN_DATASET_SIZE = 100*1000
 NUM_STEPS = NUM_EPOCHS * (TRAIN_DATASET_SIZE // BATCH_SIZE)
 PARAMS = {
-    'train_dataset_path': 'data/tzb1225_train/',
-    'val_dataset_path': 'data/tzb1225_val/',
+    'train_dataset_path': 'data/train/',
+    'val_dataset_path': 'data/val/',
     'weight_decay': 4e-5,
     'initial_learning_rate': 0.0625, #0.0625,  # 0.5/8
     'decay_steps': NUM_STEPS,
     'end_learning_rate': 1e-6,
-    'model_dir': 'models/tzb',
-    'num_classes': 2,
+    'model_dir': 'models/imagenetRFB',
+    'num_classes': 200,
     'depth_multiplier': '0.5'  # set '1.0' for 1.0x version
 }
 
