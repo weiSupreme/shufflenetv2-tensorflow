@@ -6,6 +6,8 @@ import os
 MOMENTUM = 0.9
 USE_NESTEROV = True
 MOVING_AVERAGE_DECAY = 0.995
+global INIT_FLAG
+INIT_FLAG=False
 
 class RestoreHook(tf.train.SessionRunHook):
     def __init__(self, init_fn):
@@ -21,7 +23,7 @@ def model_fn(features, labels, mode, params):
     This is a function for creating a computational tensorflow graph.
     The function is in format required by tf.estimator.
     """
-
+    global INIT_FLAG
     is_training = mode == tf.estimator.ModeKeys.TRAIN
     logits = shufflenet(
         features['images'], is_training,
@@ -42,15 +44,16 @@ def model_fn(features, labels, mode, params):
             mode, predictions=predictions,
             export_outputs={'outputs': export_outputs}
         )
-
-    exclude = ['global_step:0','classifier/biases:0','classifier/weights:0'
-        ]
-    all_variables = tf.contrib.slim.get_variables_to_restore()
-    varialbes_to_use=[]
-    for v in all_variables:
-        if v.name not in exclude:
-            varialbes_to_use.append(v)
-    init_fn = tf.contrib.framework.assign_from_checkpoint_fn(tf.train.latest_checkpoint('models/imagenet/from_pretrained'), varialbes_to_use, ignore_missing_vars=True)
+    init_fn=None
+    if INIT_FLAG:
+        exclude = ['ShuffleNetV2/Conv1/weights:0','global_step:0','classifier/biases:0','classifier/weights:0'
+            ]
+        all_variables = tf.contrib.slim.get_variables_to_restore()
+        varialbes_to_use=[]
+        for v in all_variables:
+            if v.name not in exclude:
+                varialbes_to_use.append(v)
+        init_fn = tf.contrib.framework.assign_from_checkpoint_fn(tf.train.latest_checkpoint('run00'), varialbes_to_use, ignore_missing_vars=True)
 
     with tf.name_scope('weight_decay'):
         add_weight_decay(params['weight_decay'])
@@ -107,8 +110,11 @@ def model_fn(features, labels, mode, params):
     with tf.control_dependencies([train_op]), tf.name_scope('ema'):
         ema = tf.train.ExponentialMovingAverage(decay=MOVING_AVERAGE_DECAY, num_updates=0)
         train_op = ema.apply(tf.trainable_variables())
-
-    return tf.estimator.EstimatorSpec(mode, loss=total_loss, train_op=train_op, training_hooks=[RestoreHook(init_fn)])
+    if INIT_FLAG:
+        INIT_FLAG=False
+        return tf.estimator.EstimatorSpec(mode, loss=total_loss, train_op=train_op, training_hooks=[RestoreHook(init_fn)])
+    else:
+        return tf.estimator.EstimatorSpec(mode, loss=total_loss, train_op=train_op)
 
 
 def add_weight_decay(weight_decay):

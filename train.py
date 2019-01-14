@@ -1,6 +1,7 @@
 import tensorflow as tf
 import os
-from model import model_fn, RestoreMovingAverageHook
+#from model import model_fn, RestoreMovingAverageHook
+from modifyClassNum import model_fn, RestoreMovingAverageHook
 from input_pipeline import Pipeline
 tf.logging.set_verbosity('INFO')
 
@@ -21,18 +22,18 @@ Parameters below is for training 0.5x version.
 GPU_TO_USE = '1'
 BATCH_SIZE = 128
 VALIDATION_BATCH_SIZE = 32
-NUM_EPOCHS = 133  # set 166 for 1.0x version
-TRAIN_DATASET_SIZE = 100*1000
+NUM_EPOCHS = 90  # set 166 for 1.0x version
+TRAIN_DATASET_SIZE = 43763
 NUM_STEPS = NUM_EPOCHS * (TRAIN_DATASET_SIZE // BATCH_SIZE)
 PARAMS = {
-    'train_dataset_path': 'data/train/',
-    'val_dataset_path': 'data/val/',
+    'train_dataset_path': 'data/tzball_train/',
+    'val_dataset_path': 'data/tzb0104_val/',
     'weight_decay': 4e-5,
     'initial_learning_rate': 0.0625, #0.0625,  # 0.5/8
     'decay_steps': NUM_STEPS,
-    'end_learning_rate': 1e-6,
-    'model_dir': 'models/imagenetRFB',
-    'num_classes': 200,
+    'end_learning_rate': 1e-7,
+    'model_dir': 'models/tzbRFB',
+    'num_classes': 2,
     'depth_multiplier': '0.5'  # set '1.0' for 1.0x version
 }
 
