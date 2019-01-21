@@ -19,20 +19,20 @@ Parameters below is for training 0.5x version.
 # 1281144/128 = 10008.9375
 # so 1 epoch ~ 10000 steps
 
-GPU_TO_USE = '1'
+GPU_TO_USE = '0'
 BATCH_SIZE = 128
 VALIDATION_BATCH_SIZE = 32
-NUM_EPOCHS = 90  # set 166 for 1.0x version
-TRAIN_DATASET_SIZE = 43763
+NUM_EPOCHS = 133  # set 166 for 1.0x version
+TRAIN_DATASET_SIZE = 20370 #tzbjiu:20370-55282 tzbxin:23470
 NUM_STEPS = NUM_EPOCHS * (TRAIN_DATASET_SIZE // BATCH_SIZE)
 PARAMS = {
-    'train_dataset_path': 'data/tzball_train/',
-    'val_dataset_path': 'data/tzb0104_val/',
+    'train_dataset_path': 'data/tzbjiu0121_train/',
+    'val_dataset_path': 'data/tzbjiu0121_val/',
     'weight_decay': 4e-5,
     'initial_learning_rate': 0.0625, #0.0625,  # 0.5/8
     'decay_steps': NUM_STEPS,
     'end_learning_rate': 1e-7,
-    'model_dir': 'models/tzbRFB',
+    'model_dir': 'models/tzbjiu0121',
     'num_classes': 2,
     'depth_multiplier': '0.5'  # set '1.0' for 1.0x version
 }

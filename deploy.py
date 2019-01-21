@@ -23,7 +23,7 @@ Parameters below is for training 0.5x version.
 
 GPU_TO_USE = '0'
 PARAMS = {
-    'model_dir': 'models/tzbRFB_all_133-90',
+    'model_dir': 'models/tzbjiu',
     'num_classes': 2,
     'depth_multiplier': '0.5'  # set '1.0' for 1.0x version
 }
