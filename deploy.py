@@ -21,9 +21,9 @@ Parameters below is for training 0.5x version.
 # 1281144/128 = 10008.9375
 # so 1 epoch ~ 10000 steps
 
-GPU_TO_USE = '0'
+GPU_TO_USE = '1'
 PARAMS = {
-    'model_dir': 'models/tzbjiu',
+    'model_dir': 'models/tzbxin0122all',
     'num_classes': 2,
     'depth_multiplier': '0.5'  # set '1.0' for 1.0x version
 }

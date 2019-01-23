@@ -27,8 +27,8 @@ python create_tfrecords.py \
 
 def make_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-m', '--metadata_file', type=str,default='tzbjiu0121_val_list.txt')
-    parser.add_argument('-o', '--output', type=str,default='tzbjiu0121_val')
+    parser.add_argument('-m', '--metadata_file', type=str,default='tzbxin0122_train_list.txt')
+    parser.add_argument('-o', '--output', type=str,default='tzbxin0122-jiu_train')
     parser.add_argument('-l', '--labels', type=str,default='integer_encoding.json')
     parser.add_argument('-b', '--boxes', type=str, default='')
     parser.add_argument('-s', '--num_shards', type=int, default=2)

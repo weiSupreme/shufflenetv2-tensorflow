@@ -46,14 +46,14 @@ def model_fn(features, labels, mode, params):
         )
     init_fn=None
     if INIT_FLAG:
-        exclude =['global_step:0','classifier/biases:0','classifier/weights:0'] # ['ShuffleNetV2/Conv1/weights:0','global_step:0','classifier/biases:0','classifier/weights:0'
+        exclude =['global_step:0']#,'classifier/biases:0','classifier/weights:0'] # ['ShuffleNetV2/Conv1/weights:0','global_step:0','classifier/biases:0','classifier/weights:0'
             #]
         all_variables = tf.contrib.slim.get_variables_to_restore()
         varialbes_to_use=[]
         for v in all_variables:
             if v.name not in exclude:
                 varialbes_to_use.append(v)
-        init_fn = tf.contrib.framework.assign_from_checkpoint_fn(tf.train.latest_checkpoint('models/imagenet-0.535'), varialbes_to_use, ignore_missing_vars=True)
+        init_fn = tf.contrib.framework.assign_from_checkpoint_fn(tf.train.latest_checkpoint('models/tzbjiuall'), varialbes_to_use, ignore_missing_vars=True)
 
     with tf.name_scope('weight_decay'):
         add_weight_decay(params['weight_decay'])
