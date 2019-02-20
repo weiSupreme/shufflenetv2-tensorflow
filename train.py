@@ -20,19 +20,19 @@ Parameters below is for training 0.5x version.
 # so 1 epoch ~ 10000 steps
 
 GPU_TO_USE = '1'
-BATCH_SIZE = 128
+BATCH_SIZE = 32
 VALIDATION_BATCH_SIZE = 32
-NUM_EPOCHS = 133  # set 166 for 1.0x version
-TRAIN_DATASET_SIZE = 29290 #tzbjiu:29290-25424 36496-73461 tzbxin:23470-39771 3914(4356)+4189
+NUM_EPOCHS = 90  # set 166 for 1.0x version
+TRAIN_DATASET_SIZE = 34058 #tzbjiu:29290-25424 36496-73461 tzbxin:23470-39771 3914(4356)+4189
 NUM_STEPS = NUM_EPOCHS * (TRAIN_DATASET_SIZE // BATCH_SIZE)
 PARAMS = {
-    'train_dataset_path': 'data/tzbjiu0121part_train/',
-    'val_dataset_path': 'data/tzbjiu0121part_val/',
+    'train_dataset_path': 'data/tzbjiu2018_bsyn_train/',
+    'val_dataset_path': 'data/tzbjiu2018_val/',
     'weight_decay': 4e-5,
     'initial_learning_rate': 0.0625, #0.0625,  # 0.5/8
     'decay_steps': NUM_STEPS,
-    'end_learning_rate': 1e-7,
-    'model_dir': 'models/tzbjiuRFB0123',
+    'end_learning_rate': 1e-6,
+    'model_dir': 'models/2018bsyn',
     'num_classes': 2,
     'depth_multiplier': '0.5'  # set '1.0' for 1.0x version
 }

@@ -27,8 +27,8 @@ python create_tfrecords.py \
 
 def make_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-m', '--metadata_file', type=str,default='tzbxin0122_train_list.txt')
-    parser.add_argument('-o', '--output', type=str,default='tzbxin0122-jiu_train')
+    parser.add_argument('-m', '--metadata_file', type=str,default='tzbjiu2018_bsyn_train_list.txt')
+    parser.add_argument('-o', '--output', type=str,default='tzbjiu2018_bsyn_train')
     parser.add_argument('-l', '--labels', type=str,default='integer_encoding.json')
     parser.add_argument('-b', '--boxes', type=str, default='')
     parser.add_argument('-s', '--num_shards', type=int, default=2)
@@ -46,6 +46,7 @@ def dict_to_tf_example(image_path, integer_label, boxes=None):
         an instance of tf.Example or None.
     """
     #assert image_path.endswith('.png')
+    #print(image_path)
     with tf.gfile.GFile(image_path, 'rb') as f:
         encoded_jpg = f.read()
 

@@ -53,7 +53,7 @@ def model_fn(features, labels, mode, params):
         for v in all_variables:
             if v.name not in exclude:
                 varialbes_to_use.append(v)
-        init_fn = tf.contrib.framework.assign_from_checkpoint_fn(tf.train.latest_checkpoint('models/tzbjiuall'), varialbes_to_use, ignore_missing_vars=True)
+        init_fn = tf.contrib.framework.assign_from_checkpoint_fn(tf.train.latest_checkpoint('models/tzbjiu2018all'), varialbes_to_use, ignore_missing_vars=True)
 
     with tf.name_scope('weight_decay'):
         add_weight_decay(params['weight_decay'])
