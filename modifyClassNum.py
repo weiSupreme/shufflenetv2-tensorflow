@@ -1,13 +1,15 @@
 import tensorflow as tf
 from architecture import shufflenet
 import os
+from functools import reduce
+from operator import mul
 
 
 MOMENTUM = 0.9
 USE_NESTEROV = True
 MOVING_AVERAGE_DECAY = 0.995
 global INIT_FLAG
-INIT_FLAG=False
+INIT_FLAG=True
 
 class RestoreHook(tf.train.SessionRunHook):
     def __init__(self, init_fn):
@@ -50,10 +52,14 @@ def model_fn(features, labels, mode, params):
             #]
         all_variables = tf.contrib.slim.get_variables_to_restore()
         varialbes_to_use=[]
+        num_params=0
         for v in all_variables:
+            shape=v.get_shape()
+            num_params+= reduce(mul, [dim.value for dim in shape], 1)
             if v.name not in exclude:
                 varialbes_to_use.append(v)
-        init_fn = tf.contrib.framework.assign_from_checkpoint_fn(tf.train.latest_checkpoint('models/tzbjiu2018all'), varialbes_to_use, ignore_missing_vars=True)
+        init_fn = tf.contrib.framework.assign_from_checkpoint_fn(tf.train.latest_checkpoint('models/jiu-huan_0.33_9967'), varialbes_to_use, ignore_missing_vars=True)
+        print('***********************params: ', num_params)
 
     with tf.name_scope('weight_decay'):
         add_weight_decay(params['weight_decay'])

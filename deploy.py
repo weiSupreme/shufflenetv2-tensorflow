@@ -23,9 +23,9 @@ Parameters below is for training 0.5x version.
 
 GPU_TO_USE = '1'
 PARAMS = {
-    'model_dir': 'models/tzbjiu2018RFB',
+    'model_dir': 'models/xin_t_from_jiu-huan',
     'num_classes': 2,
-    'depth_multiplier': '0.5'  # set '1.0' for 1.0x version
+    'depth_multiplier': '1.0'  # set '1.0' for 1.0x version
 }
 
 

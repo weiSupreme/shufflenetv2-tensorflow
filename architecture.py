@@ -19,8 +19,16 @@ def shufflenet(images, is_training, num_classes=1000, depth_multiplier='1.0'):
         depth_multiplier: a string, possible values are '0.5', '1.0', '1.5', and '2.0'.
     Returns:
         a float tensor with shape [batch_size, num_classes].
+        width_config = {
+            0.25: (24, 48, 96, 512),
+            0.33: (32, 64, 128, 512),
+            0.5: (48, 96, 192, 1024),
+            1.0: (116, 232, 464, 1024),
+            1.5: (176, 352, 704, 1024),
+            2.0: (244, 488, 976, 2048),
+        }
     """
-    possibilities = {'0.5': 48, '1.0': 116, '1.5': 176, '2.0': 224}
+    possibilities = {'0.33': 32, '0.5': 48, '1.0': 116, '1.5': 176, '2.0': 224}
     initial_depth = possibilities[depth_multiplier]
 
     def batch_norm(x):
@@ -47,22 +55,31 @@ def shufflenet(images, is_training, num_classes=1000, depth_multiplier='1.0'):
             'normalizer_fn': batch_norm, 'data_format': 'NHWC',
             'weights_initializer': tf.contrib.layers.xavier_initializer()
         }
-        with slim.arg_scope([slim.conv2d, depthwise_conv], **params):
+        with slim.arg_scope([slim.conv2d, depthwise_conv, slim.conv2d_transpose], **params):
 
             x = slim.conv2d(x, 24, (3, 3), stride=2, scope='Conv1')
             x = slim.max_pool2d(x, (3, 3), stride=2, padding='SAME', scope='MaxPool')
 
             x = block(x, num_units=4, out_channels=initial_depth, scope='Stage2')
             x = block(x, num_units=8, scope='Stage3')
+            '''
+            z = slim.conv2d(x, 64, (1, 1), stride=1, scope='Conv6_5')
+            z = depthwise_conv(z, kernel=3, stride=2, padding='SAME',scope='Conv6_6')
+            z = slim.conv2d(z, 64, (1, 1), stride=1, scope='Conv6_7')
+            u = slim.conv2d(x, 64, (1, 1), stride=1, scope='Conv6_8')
+            u = depthwise_conv(u, kernel=3, stride=2, padding='SAME',scope='Conv6_9')
+            u = slim.conv2d(u, 64, (1, 1), stride=1, scope='Conv6_10')
+            '''
             x = block(x, num_units=4, scope='Stage4')
             '''
-            z = slim.conv2d(x, 64, (1, 1), stride=1, scope='Conv6_1')
-            y = depthwise_conv(z, kernel=3, stride=1, padding='SAME',scope='Conv6_2') #4
-            y = slim.conv2d(y, 128, (1, 1), stride=1, scope='Conv6_3')
+            y = slim.conv2d(x, 64, (1, 1), stride=1, scope='Conv6_1')
+            y = tf.concat([z,y],axis=3)
+            y = depthwise_conv(y, kernel=3, stride=1, padding='VALID',scope='Conv6_2') #4
+            y = slim.conv2d(y, 64, (1, 1), stride=1, scope='Conv6_3')
             y = depthwise_conv(y, kernel=3, stride=2, padding='SAME',scope='Conv6_4') #2
-            y = slim.conv2d_transpose(y,192, (3,3), stride=[2,2],padding="VALID")
-            #x = slim.conv2d(y, 192, (1, 1), stride=1, scope='dConv',activation_fn=tf.nn.sigmoid)
-            #x = tf.concat([y,z],axis=3)   10.7
+            y = slim.conv2d_transpose(y,64, (3,3), stride=[2,2],padding="VALID")
+            x = slim.conv2d(x, 64, (1, 1), stride=1, scope='sConv')
+            x = tf.concat([x,y,u],axis=3)
             '''
             #shape = tf.shape(x)
             #ch = shape[3]
@@ -70,7 +87,12 @@ def shufflenet(images, is_training, num_classes=1000, depth_multiplier='1.0'):
                 with tf.variable_scope('RFBModule'):
                     x = RFBModuleB2(x, 192)
 
-            final_channels = 1024 if depth_multiplier != '2.0' else 2048
+            if depth_multiplier == '0.33':
+                final_channels = 512
+            elif depth_multiplier == '2.0':
+                final_channels = 2048
+            else:
+                final_channels = 1024
             x = slim.conv2d(x, final_channels, (1, 1), stride=1, scope='Conv5')
     
     # global average pooling

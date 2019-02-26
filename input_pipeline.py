@@ -1,9 +1,9 @@
 import tensorflow as tf
 
 
-SHUFFLE_BUFFER_SIZE = 100*1000+1
-NUM_FILES_READ_IN_PARALLEL = 10
-NUM_PARALLEL_CALLS = 8
+SHUFFLE_BUFFER_SIZE = 130*1000+1
+NUM_FILES_READ_IN_PARALLEL = 20
+NUM_PARALLEL_CALLS = 32
 RESIZE_METHOD = 1 #tf.image.ResizeMethod.BILINEAR
 IMAGE_SIZE = 224  # this will be used for training and evaluation
 MIN_DIMENSION = 256  # when evaluating, resize to this size before doing central crop
@@ -37,9 +37,9 @@ class Pipeline:
         # decode and augment data
         dataset = dataset.apply(tf.contrib.data.map_and_batch(
             self.parse_and_preprocess, batch_size=batch_size,
-            num_parallel_batches=1))#, drop_remainder=False
+            num_parallel_batches=16))#, drop_remainder=False
         #))
-        dataset = dataset.prefetch(buffer_size=1)
+        dataset = dataset.prefetch(buffer_size=16)
 
         self.dataset = dataset
 
