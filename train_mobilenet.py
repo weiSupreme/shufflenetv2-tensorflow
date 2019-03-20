@@ -19,7 +19,7 @@ Parameters below is for training 0.5x version.
 # 1281144/128 = 10008.9375
 # so 1 epoch ~ 10000 steps
 
-GPU_TO_USE = '1'
+GPU_TO_USE = '0'
 BATCH_SIZE = 64
 VALIDATION_BATCH_SIZE = 32
 NUM_EPOCHS = 100  # set 166 for 1.0x version
@@ -32,7 +32,7 @@ PARAMS = {
     'initial_learning_rate': 0.0625, #0.0625,  # 0.5/8
     'decay_steps': NUM_STEPS,
     'end_learning_rate': 1e-7,
-    'model_dir': 'models/0319/1.0_64',
+    'model_dir': 'models/tzb',
     'num_classes': 2,
     'depth_multiplier': '1.0'  # set '1.0' for 1.0x version
 }
@@ -65,7 +65,7 @@ session_config.gpu_options.allow_growth = True
 run_config = tf.estimator.RunConfig()
 run_config = run_config.replace(
     model_dir=PARAMS['model_dir'], session_config=session_config,
-    save_summary_steps=500, save_checkpoints_steps=556,
+    save_summary_steps=500, save_checkpoints_secs=556,
     log_step_count_steps=50
 )
 

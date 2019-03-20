@@ -1,8 +1,8 @@
 import tensorflow as tf
-from architecture import shufflenet
 import os
 from functools import reduce
 from operator import mul
+from resnet_v2 import resnet_v2_50
 
 
 MOMENTUM = 0.9
@@ -27,10 +27,10 @@ def model_fn(features, labels, mode, params):
     """
     global INIT_FLAG
     is_training = mode == tf.estimator.ModeKeys.TRAIN
-    logits = shufflenet(
-        features['images'], is_training,
-        num_classes=params['num_classes'],
-        depth_multiplier=params['depth_multiplier']
+    logits = resnet_v2_50(
+        features['images'],num_classes=params['num_classes'],
+        is_training=is_training
+        #depth_multiplier=params['depth_multiplier']
     )
     predictions = {
         'probabilities': tf.nn.softmax(logits, axis=1),

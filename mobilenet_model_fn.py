@@ -1,5 +1,5 @@
 import tensorflow as tf
-from architecture import shufflenet
+from architecture import mobilenet
 import os
 from functools import reduce
 from operator import mul
@@ -27,7 +27,7 @@ def model_fn(features, labels, mode, params):
     """
     global INIT_FLAG
     is_training = mode == tf.estimator.ModeKeys.TRAIN
-    logits = shufflenet(
+    logits = mobilenet(
         features['images'], is_training,
         num_classes=params['num_classes'],
         depth_multiplier=params['depth_multiplier']
@@ -46,20 +46,22 @@ def model_fn(features, labels, mode, params):
             mode, predictions=predictions,
             export_outputs={'outputs': export_outputs}
         )
+    
+    exclude =['global_step:0']#,'classifier/biases:0','classifier/weights:0'] # ['ShuffleNetV2/Conv1/weights:0','global_step:0','classifier/biases:0','classifier/weights:0'
+        #]
+    all_variables = tf.contrib.slim.get_variables_to_restore()
+    varialbes_to_use=[]
+    num_params=0
+    for v in all_variables:
+        shape=v.get_shape()
+        num_params+= reduce(mul, [dim.value for dim in shape], 1)
+        if v.name not in exclude:
+            varialbes_to_use.append(v)
+    print('***********************params: ', num_params)
     init_fn=None
     if INIT_FLAG:
-        exclude =['global_step:0']#,'classifier/biases:0','classifier/weights:0'] # ['ShuffleNetV2/Conv1/weights:0','global_step:0','classifier/biases:0','classifier/weights:0'
-            #]
-        all_variables = tf.contrib.slim.get_variables_to_restore()
-        varialbes_to_use=[]
-        num_params=0
-        for v in all_variables:
-            shape=v.get_shape()
-            num_params+= reduce(mul, [dim.value for dim in shape], 1)
-            if v.name not in exclude:
-                varialbes_to_use.append(v)
-        init_fn = tf.contrib.framework.assign_from_checkpoint_fn(tf.train.latest_checkpoint('models/jiu-huan_0.33_9967'), varialbes_to_use, ignore_missing_vars=True)
-        print('***********************params: ', num_params)
+        init_fn = tf.contrib.framework.assign_from_checkpoint_fn(tf.train.latest_checkpoint('models/imagenet'), varialbes_to_use, ignore_missing_vars=True)
+
 
     with tf.name_scope('weight_decay'):
         add_weight_decay(params['weight_decay'])

@@ -1,7 +1,7 @@
 import tensorflow as tf
 import os
 #from model import model_fn, RestoreMovingAverageHook
-from modifyClassNum import model_fn, RestoreMovingAverageHook
+from resnet_model_fn import model_fn, RestoreMovingAverageHook
 from input_pipeline import Pipeline
 tf.logging.set_verbosity('INFO')
 
@@ -19,22 +19,22 @@ Parameters below is for training 0.5x version.
 # 1281144/128 = 10008.9375
 # so 1 epoch ~ 10000 steps
 
-GPU_TO_USE = '1'
+GPU_TO_USE = '0'
 BATCH_SIZE = 64
 VALIDATION_BATCH_SIZE = 32
 NUM_EPOCHS = 100  # set 166 for 1.0x version
 TRAIN_DATASET_SIZE = 71070
 NUM_STEPS = NUM_EPOCHS * (TRAIN_DATASET_SIZE // BATCH_SIZE)
 PARAMS = {
-    'train_dataset_path': 'data/jiu-huan_train/',
-    'val_dataset_path': 'data/jiu-huan_val/',
+    'train_dataset_path': 'data/jiu-huan_train_2/',
+    'val_dataset_path': 'data/jiu-huan_val_2/',
     'weight_decay': 4e-5,
     'initial_learning_rate': 0.0625, #0.0625,  # 0.5/8
     'decay_steps': NUM_STEPS,
     'end_learning_rate': 1e-7,
-    'model_dir': 'models/0319/1.0_64',
+    'model_dir': 'models/0319/resnet_v2_50_2',
     'num_classes': 2,
-    'depth_multiplier': '1.0'  # set '1.0' for 1.0x version
+    'depth_multiplier': '0.33'  # no use
 }
 
 
@@ -62,10 +62,11 @@ def get_input_fn(is_training):
 session_config = tf.ConfigProto(allow_soft_placement=True)
 session_config.gpu_options.visible_device_list = GPU_TO_USE
 session_config.gpu_options.allow_growth = True
+#session_config.gpu_options.per_process_gpu_memory_fraction=0.7
 run_config = tf.estimator.RunConfig()
 run_config = run_config.replace(
     model_dir=PARAMS['model_dir'], session_config=session_config,
-    save_summary_steps=500, save_checkpoints_steps=556,
+    save_summary_steps=556, save_checkpoints_steps=556,
     log_step_count_steps=50
 )
 
