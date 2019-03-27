@@ -1,5 +1,5 @@
 import tensorflow as tf
-from architecture import mobilenet
+from mobilenetv2 import mobilenet
 import os
 from functools import reduce
 from operator import mul

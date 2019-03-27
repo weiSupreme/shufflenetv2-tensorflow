@@ -1,7 +1,7 @@
 import tensorflow as tf
 import os
 #from model import model_fn, RestoreMovingAverageHook
-from modifyClassNum import model_fn, RestoreMovingAverageHook
+from mobilenet_model_fn import model_fn, RestoreMovingAverageHook
 from input_pipeline import Pipeline
 tf.logging.set_verbosity('INFO')
 
